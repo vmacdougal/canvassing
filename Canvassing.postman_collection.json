@@ -1,0 +1,367 @@
+{
+	"info": {
+		"_postman_id": "cb508011-adcb-431d-9bed-7cdc0e7c14cd",
+		"name": "Canvassing",
+		"description": "A collection of APIs to exercise the canvassing app",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7803154"
+	},
+	"item": [
+		{
+			"name": "Get a list to canvass",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/household/canvassList?lat=29.5&lon=-96.5",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"household",
+						"canvassList"
+					],
+					"query": [
+						{
+							"key": "lat",
+							"value": "29.5"
+						},
+						{
+							"key": "lon",
+							"value": "-96.5"
+						}
+					]
+				},
+				"description": "Retrieves the 50 closest addresses to a geographical point. Will only return addresses within +/- .1 degree of latitude and longitude, which is a rectangle 7 miles by 4-7 miles outside the polar regions."
+			},
+			"response": []
+		},
+		{
+			"name": "Add a household",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n            \"address\": \"123 Sesame St\",\n            \"status\": \"UNCANVASSED\",\n            \"latitude\": 29.607808962967948,\n            \"longitude\": -96.96152593636567\n        },",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/household",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"household"
+					]
+				},
+				"description": "Adds a household to the database."
+			},
+			"response": []
+		},
+		{
+			"name": "Set household status",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful PUT request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 204]);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n            \"id\": 300,\n            \"status\": \"CANVASSED\"\n        }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/household/status",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"household",
+						"status"
+					]
+				},
+				"description": "Updates the household with its canvassing status. Acceptable values are\n\n```\nUNCANVASSED,\nNOT_HOME,\nCANVASSED,\nREFUSED,\nINACCESSIBLE\n\n ```"
+			},
+			"response": []
+		},
+		{
+			"name": "Remove a household",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful DELETE request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 202, 204]);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/household/{{id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"household",
+						"{{id}}"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "300",
+							"disabled": true
+						}
+					]
+				},
+				"description": "Removes a household from the database. This also removes any responses to the questionnaire"
+			},
+			"response": []
+		},
+		{
+			"name": "Get the questionnaire",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/questionnaire",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"questionnaire"
+					]
+				},
+				"description": "Retrieves the questionnaire"
+			},
+			"response": []
+		},
+		{
+			"name": "Add a new questionnaire",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"items\": {\n        \"Question(text=Are you registered to vote?)\": [\n            {\n                \"text\": \"Yes\"\n            },\n            {\n                \"text\": \"No\"\n            }\n        ],\n        \"Question(text=Can I register you today?)\": [\n            {\n                \"text\": \"Yes\"\n            },\n            {\n                \"text\": \"Ineligible\"\n            },\n            {\n                \"text\": \"Refused\"\n            },\n            {\n                \"text\": \"Took mail-in\"\n            }\n        ]\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/questionnaire",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"questionnaire"
+					]
+				},
+				"description": "This **replaces** the questionnaire with a new one. Any responses to the previous questionnaire are wiped out."
+			},
+			"response": []
+		},
+		{
+			"name": "Add responses for a household",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful POST request\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n    {\n        \"householdId\": 300,\n        \"questionId\": 1,\n        \"answerId\": 2\n    },\n    {\n        \"householdId\": 300,\n        \"questionId\": 2,\n        \"answerId\": 1\n    }\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/response",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"response"
+					]
+				},
+				"description": "Add responses for a household. This will replace existing responses if there are any."
+			},
+			"response": []
+		},
+		{
+			"name": "Get the responses",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/response",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"response"
+					]
+				},
+				"description": "Retrieves all households with a status other than UNCANVASSED, along with ther responses to any questions."
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "id",
+			"value": "1"
+		},
+		{
+			"key": "base_url",
+		    "value": "http://localhost:8080"
+		}
+	]
+}
