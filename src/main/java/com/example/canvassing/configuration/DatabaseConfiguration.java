@@ -1,4 +1,4 @@
-package com.example.canvassing;
+package com.example.canvassing.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
