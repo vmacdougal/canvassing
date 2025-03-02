@@ -1,6 +1,6 @@
-package com.example.demo.persistence;
+package com.example.canvassing.persistence;
 
-import com.example.demo.model.Answer;
+import com.example.canvassing.model.Answer;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;

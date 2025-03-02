@@ -1,8 +1,8 @@
-package com.example.demo.controller;
+package com.example.canvassing.controller;
 
-import com.example.demo.model.HouseholdResponse;
-import com.example.demo.model.Response;
-import com.example.demo.service.ResponseService;
+import com.example.canvassing.model.HouseholdResponse;
+import com.example.canvassing.model.Response;
+import com.example.canvassing.service.ResponseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

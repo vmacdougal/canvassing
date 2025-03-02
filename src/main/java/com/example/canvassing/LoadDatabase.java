@@ -1,10 +1,10 @@
-package com.example.demo;
+package com.example.canvassing;
 
-import com.example.demo.model.Household;
-import com.example.demo.model.Location;
-import com.example.demo.model.Questionnaire;
-import com.example.demo.persistence.HouseholdRepository;
-import com.example.demo.persistence.QuestionnaireRepository;
+import com.example.canvassing.model.Household;
+import com.example.canvassing.model.Location;
+import com.example.canvassing.model.Questionnaire;
+import com.example.canvassing.persistence.HouseholdRepository;
+import com.example.canvassing.persistence.QuestionnaireRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;

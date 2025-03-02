@@ -1,11 +1,11 @@
-package com.example.demo.service;
+package com.example.canvassing.service;
 
-import com.example.demo.model.Household;
-import com.example.demo.model.HouseholdResponse;
-import com.example.demo.model.Response;
-import com.example.demo.model.Status;
-import com.example.demo.persistence.HouseholdRepository;
-import com.example.demo.persistence.ResponseRepository;
+import com.example.canvassing.model.Household;
+import com.example.canvassing.model.HouseholdResponse;
+import com.example.canvassing.model.Response;
+import com.example.canvassing.model.Status;
+import com.example.canvassing.persistence.HouseholdRepository;
+import com.example.canvassing.persistence.ResponseRepository;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

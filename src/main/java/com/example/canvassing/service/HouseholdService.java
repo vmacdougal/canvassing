@@ -1,11 +1,11 @@
-package com.example.demo.service;
+package com.example.canvassing.service;
 
-import com.example.demo.model.CanvassList;
-import com.example.demo.model.Household;
-import com.example.demo.model.Location;
-import com.example.demo.model.Questionnaire;
-import com.example.demo.persistence.HouseholdRepository;
-import com.example.demo.persistence.QuestionnaireRepository;
+import com.example.canvassing.model.CanvassList;
+import com.example.canvassing.model.Household;
+import com.example.canvassing.model.Location;
+import com.example.canvassing.model.Questionnaire;
+import com.example.canvassing.persistence.HouseholdRepository;
+import com.example.canvassing.persistence.QuestionnaireRepository;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;

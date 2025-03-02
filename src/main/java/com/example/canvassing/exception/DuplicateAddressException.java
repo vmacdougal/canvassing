@@ -1,4 +1,4 @@
-package com.example.canvassing;
+package com.example.canvassing.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

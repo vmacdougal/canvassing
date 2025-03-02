@@ -1,8 +1,6 @@
-package com.example.demo.persistence;
+package com.example.canvassing.persistence;
 
-import com.example.demo.model.HouseholdResponse;
-import com.example.demo.model.Question;
-import com.example.demo.model.Response;
+import com.example.canvassing.model.Response;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;

@@ -1,7 +1,7 @@
-package com.example.demo.service;
+package com.example.canvassing.service;
 
-import com.example.demo.model.Questionnaire;
-import com.example.demo.persistence.QuestionnaireRepository;
+import com.example.canvassing.model.Questionnaire;
+import com.example.canvassing.persistence.QuestionnaireRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;

@@ -1,10 +1,10 @@
-package com.example.demo.controller;
+package com.example.canvassing.controller;
 
-import com.example.demo.DuplicateAddressException;
-import com.example.demo.model.CanvassList;
-import com.example.demo.model.Household;
-import com.example.demo.model.Location;
-import com.example.demo.service.HouseholdService;
+import com.example.canvassing.exception.DuplicateAddressException;
+import com.example.canvassing.model.CanvassList;
+import com.example.canvassing.model.Household;
+import com.example.canvassing.model.Location;
+import com.example.canvassing.service.HouseholdService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

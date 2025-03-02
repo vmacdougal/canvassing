@@ -1,4 +1,4 @@
-package com.example.demo.model;
+package com.example.canvassing.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;

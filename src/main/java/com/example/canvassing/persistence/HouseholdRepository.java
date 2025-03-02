@@ -1,9 +1,9 @@
-package com.example.demo.persistence;
+package com.example.canvassing.persistence;
 
-import com.example.demo.DuplicateAddressException;
-import com.example.demo.model.Household;
-import com.example.demo.model.Location;
-import com.example.demo.model.Status;
+import com.example.canvassing.exception.DuplicateAddressException;
+import com.example.canvassing.model.Household;
+import com.example.canvassing.model.Location;
+import com.example.canvassing.model.Status;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;

@@ -1,4 +1,4 @@
-package com.example.demo.model;
+package com.example.canvassing.model;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

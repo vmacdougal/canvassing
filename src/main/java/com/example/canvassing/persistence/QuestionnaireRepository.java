@@ -1,8 +1,8 @@
-package com.example.demo.persistence;
+package com.example.canvassing.persistence;
 
-import com.example.demo.model.Answer;
-import com.example.demo.model.Question;
-import com.example.demo.model.Questionnaire;
+import com.example.canvassing.model.Answer;
+import com.example.canvassing.model.Question;
+import com.example.canvassing.model.Questionnaire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;

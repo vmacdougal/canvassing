@@ -1,7 +1,7 @@
-package com.example.demo.controller;
+package com.example.canvassing.controller;
 
-import com.example.demo.model.Questionnaire;
-import com.example.demo.service.QuestionnaireService;
+import com.example.canvassing.model.Questionnaire;
+import com.example.canvassing.service.QuestionnaireService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
