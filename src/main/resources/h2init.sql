@@ -1,12 +1,17 @@
 CREATE SCHEMA IF NOT EXISTS demo;
 SET SCHEMA demo;
+
+CREATE TABLE IF NOT EXISTS status (
+    id INT UNIQUE NOT NULL,
+    status VARCHAR UNIQUE NOT NULL
+);
 CREATE TABLE IF NOT EXISTS household (
     id IDENTITY PRIMARY KEY,
     address VARCHAR UNIQUE NOT NULL,
     latitude FLOAT NOT NULL,
     longitude FLOAT NOT NULL,
     status INT NOT NULL,
-    check(status >= 0 AND status < 5),
+    FOREIGN KEY (status) REFERENCES status(id),
     check(latitude <= 90.0 AND latitude >= -90.0),
     check(longitude <= 180.0 AND longitude >= -180.0)
 );

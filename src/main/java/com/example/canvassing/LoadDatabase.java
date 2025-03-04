@@ -5,6 +5,7 @@ import com.example.canvassing.model.Location;
 import com.example.canvassing.model.Questionnaire;
 import com.example.canvassing.persistence.HouseholdRepository;
 import com.example.canvassing.persistence.QuestionnaireRepository;
+import com.example.canvassing.persistence.StatusRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -16,6 +17,10 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+/**
+ * Initialize the database with some example households and a canvassing questionnaire.
+ * Initially everyone will be uncanvassed.
+ */
 @Configuration
 public class LoadDatabase {
     private static final Logger log = LoggerFactory.getLogger(LoadDatabase.class);
@@ -24,7 +29,10 @@ public class LoadDatabase {
     private static final String ADDRESS_FORMAT = "%d %s %s";
     private final Random random = new Random();
     @Bean
-    CommandLineRunner initDatabase(QuestionnaireRepository questionnaireRepository, HouseholdRepository repository) {
+    CommandLineRunner initDatabase(QuestionnaireRepository questionnaireRepository, HouseholdRepository repository, StatusRepository statusRepository) {
+        //populate the statuses
+        statusRepository.addStatuses();
+
         //populate the questionnaire
         Questionnaire questionnaire = new Questionnaire();
         List<String> answer1 = List.of("Yes", "No");
