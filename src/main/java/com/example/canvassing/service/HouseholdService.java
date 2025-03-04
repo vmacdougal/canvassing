@@ -44,6 +44,10 @@ public class HouseholdService {
         return new CanvassList(households, questionnaire);
     }
 
+    public Household getHousehold(int id) {
+        return householdRepository.getHousehold(id);
+    }
+
     public boolean setStatus(@NonNull Household household) {
         return householdRepository.setStatus(household);
     }

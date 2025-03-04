@@ -15,6 +15,8 @@ import java.util.List;
 public class HouseholdController {
     @Autowired
     private HouseholdService householdService;
+    @Autowired
+    private UpdateController updateController;
 
     @GetMapping("/households")
     public ResponseEntity<List<Household>> getHouseholds(@RequestParam double lat,
@@ -41,8 +43,10 @@ public class HouseholdController {
     @PostMapping("/household")
     public ResponseEntity<String> addHousehold(@RequestBody Household household) {
         try {
-            boolean success = householdService.addHousehold(household);
-            return new ResponseEntity<>("success", HttpStatus.OK);
+            householdService.addHousehold(household);
+            var response = new ResponseEntity<>("success", HttpStatus.OK);
+            updateController.updateHouseholds(household, true);
+            return response;
         }
         catch (DuplicateAddressException e) {
             return new ResponseEntity<>("This address already exists", HttpStatus.BAD_REQUEST);
@@ -52,7 +56,10 @@ public class HouseholdController {
 
     @DeleteMapping("/household/{id}")
     public ResponseEntity<Boolean> removeHousehold(@PathVariable int id) {
-        return new ResponseEntity<>(householdService.removeHousehold(id), HttpStatus.OK);
+        Household household = householdService.getHousehold(id);
+        var response = new ResponseEntity<>(householdService.removeHousehold(id), HttpStatus.OK);
+        updateController.updateHouseholds(household, false);
+        return response;
     }
 
 }

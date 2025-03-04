@@ -31,16 +31,23 @@ I also chose to have all reads and writes communicate directly with the database
 due to time constraints. 
 
 I chose to make the canvass a list of questions with multiple-choice answers because that seems
-like the most common type of canvass. It is a list because often subsequent questions won't make sense
+like the most common type of canvass. It is a list and not a set because often subsequent questions won't make sense
 depending on the answer to the first question. Other types of questions are possible, like integer responses
 ("how many boxes of Thin Mints do you want to order?") or phone numbers ("can we get your number to 
 let you know about events?"), but supporting arbitrary answers adds complexity. 
+
+There are two levels of user, CANVASSER and ADMIN. Admins can also access all the canvasser endpoints, because
+the idea of requiring them to have two sets of credentials for administering the system and working as canvassers seemed strange.
+There are two users in the system, joe_canvasser and susan_admin. The app uses basic authentication in the endpoints for 
+ease of development and demonstration. I am aware that this is not secure at all! Obviously it would be re-worked with session tokens
+or jwts, and also re-enable CSRF protection.
 
 # Avenues for further work
 Like all initial releases, this one is more of an MVP than a full-polished product with all possible bells and whistles.
 Further potential developments include:
 * Moving the data to a real database instead of H2 
 * A more intelligent way of searching for households near the user. Right now the query is doing a full table scan to find these households, which won't scale the way it needs to. This would really use more robust location support like a grid system, PostGIS, or Google's S2 library.
+* More care taken with security. I realize the current implementation is insecure, with hard-coded users and passwords in plaintext and csrf disabled. Adding proper user management, encryption, etc, would add significantly to the scope.
 * Storing results of past canvasses. Right now that information is wiped out when the questions change.
 * Consider solutions to data-related bottlenecks. These might include:
     * Federation or sharding. Probably it will be rare to work with data from multiple states, for instance.

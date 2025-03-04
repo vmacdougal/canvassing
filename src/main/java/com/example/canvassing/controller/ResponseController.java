@@ -25,7 +25,6 @@ public class ResponseController {
 
     /**
      * Returns results for households that were at least attempted
-     * @return
      */
     @GetMapping("/response")
     public ResponseEntity<List<HouseholdResponse>> getResponses() {

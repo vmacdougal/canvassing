@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,11 @@ public class HouseholdRepository {
         Map<String, Object>  params = new HashMap<>();
         params.put("status", Status.UNCANVASSED.ordinal());
         return jdbcTemplate.query("SELECT * FROM household WHERE status != :status", params, new HouseholdMapper());
+    }
+
+    public Household getHousehold(int id) {
+        Map<String, Object>  params = Collections.singletonMap("id", id);
+        return jdbcTemplate.query("SELECT * FROM household WHERE id = :id", params, new HouseholdMapper()).stream().findFirst().orElse(null);
     }
 
     public boolean setStatus(@NonNull Household household) {
