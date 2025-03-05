@@ -24,6 +24,10 @@ public class ResponseService {
         return responseRepository.addResponses(responses);
     }
 
+    /**
+     * get all the canvass responses
+     * @return households and responses
+     */
     public List<HouseholdResponse> getResponses() {
         List<Household> canvassed = householdRepository.getCanvassedHouseholds();
         List<HouseholdResponse> responses = new ArrayList<>();

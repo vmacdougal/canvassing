@@ -47,7 +47,7 @@ public class HouseholdService {
         return new CanvassList(households, questionnaire);
     }
 
-    public Household getHousehold(int id) {
+    public Household getHousehold(long id) {
         return householdRepository.getHousehold(id);
     }
 

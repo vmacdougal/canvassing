@@ -51,7 +51,7 @@ public class HouseholdRepository {
         return jdbcTemplate.query("SELECT * FROM household WHERE status != :status", params, new HouseholdMapper());
     }
 
-    public Household getHousehold(int id) {
+    public Household getHousehold(long id) {
         Map<String, Object>  params = Collections.singletonMap("id", id);
         return jdbcTemplate.query("SELECT * FROM household WHERE id = :id", params, new HouseholdMapper()).stream().findFirst().orElse(null);
     }

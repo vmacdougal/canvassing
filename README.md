@@ -22,6 +22,7 @@ Canvassers can:
 3. Update answers to the questions for a household.
 
 # Architectural Diagram
+![Diagram](https://github.com/vmacdougal/canvassing/blob/main/canvassArchitecture.png)
 
 # Database Schema
 This is the database schema with a crow's foot diagram. Each table has sample data beneath it.
@@ -36,7 +37,7 @@ I chose to make the canvass a list of questions with multiple-choice answers bec
 like the most common type of canvass. It is a list and not a set because often subsequent questions won't make sense
 depending on the answer to the first question. Other types of questions are possible, like integer responses
 ("how many boxes of Thin Mints do you want to order?") or phone numbers ("can we get your number to 
-let you know about events?"), but supporting arbitrary answers adds complexity. 
+let you know about events?"), but supporting arbitrary answer types adds complexity, so it was not included. 
 
 There are two levels of user, CANVASSER and ADMIN. Admins can also access all the canvasser endpoints, because
 the idea of requiring them to have two sets of credentials for administering the system and working as canvassers seemed strange.
@@ -48,8 +49,8 @@ and there just wasn't time.
 I used a web socket to send real-time household changes to logged-in users.
 
 I did not include the concept of a "pending" status or "claiming" households to be canvassed because of the requirement 
-to send updates to canvassers in real time. That wouldn't have any value if they are expected to claim a list of households
-so that no one else can canvass them, so I assumed it shouldn't work that way.
+to send updates to canvassers in real time. That wouldn't have any value if they are expected to exclusively reserve a list 
+of households, so I assumed it shouldn't work that way.
 
 # Avenues for further work
 Like all initial releases, this one is more of an MVP than a full-polished product with all possible bells and whistles.
