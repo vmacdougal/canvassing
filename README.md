@@ -23,7 +23,8 @@ Canvassers can:
 # Architectural Diagram
 
 # Database Schema
-
+This is the database schema with a crow's foot diagram. Each table has sample data beneath it.
+![Schema](https://github.com/vmacdougal/canvassing/blob/main/canvassingDatabase.png)
 # Decisions and tradeoffs
 Because of the requirements that all data updates are propagated to all users immediately,
 I chose a relational database with transactions as the simplest way to keep the data consistent. 
