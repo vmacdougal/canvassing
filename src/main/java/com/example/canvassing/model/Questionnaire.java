@@ -6,6 +6,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+
+/**
+ * The questionnaire canvassers will ask. Questions and their possible answers
+ */
 @Getter
 @Setter
 @ToString

@@ -3,7 +3,8 @@ This is the back end for a canvassing app.
 
 # Build and run
 It builds and runs on Java 17. You can build it with `mvn clean install`, and run it with `java -jar canvassing-1.0.0.jar`. 
-A postman collection with sample data is included so you can exercise the endpoints.
+A postman collection with sample data is included so you can exercise the endpoints. The endpoints the canvasser
+has access to are all called with joe_canvasser, but you can also call them with susan_admin and verify that they still work.
 
 # Overview
 Upon start-up, it populates a database with 500 random fake households in the Austin area and a 
@@ -13,7 +14,7 @@ Administrators can:
 1. Add a household
 2. Remove a household
 3. Change the questionnaire
-4. Retrieve all responses and statuses
+4. Retrieve all responses and statuses for households that were attempted
 
 Canvassers can:
 1. Retrieve a list of uncanvassed households to canvass, along with questions to ask. It returns households near them.
@@ -41,7 +42,14 @@ There are two levels of user, CANVASSER and ADMIN. Admins can also access all th
 the idea of requiring them to have two sets of credentials for administering the system and working as canvassers seemed strange.
 There are two users in the system, joe_canvasser and susan_admin. The app uses basic authentication in the endpoints for 
 ease of development and demonstration. I am aware that this is not secure at all! Obviously it would be re-worked with session tokens
-or jwts, and also re-enable CSRF protection.
+or jwts, and also re-enable CSRF protection. Proper identity and access management is a significant effort of its own,
+and there just wasn't time.
+
+I used a web socket to send real-time household changes to logged-in users.
+
+I did not include the concept of a "pending" status or "claiming" households to be canvassed because of the requirement 
+to send updates to canvassers in real time. That wouldn't have any value if they are expected to claim a list of households
+so that no one else can canvass them, so I assumed it shouldn't work that way.
 
 # Avenues for further work
 Like all initial releases, this one is more of an MVP than a full-polished product with all possible bells and whistles.

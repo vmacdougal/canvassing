@@ -7,6 +7,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.*;
 
+/**
+ * a household.
+ */
 @Entity
 @Getter
 @Setter

@@ -18,6 +18,12 @@ public class ResponseController {
     @Autowired
     private ResponseService responseService;
 
+    /**
+     * post all the responses for a successfully canvassed household. It is a list because
+     * the canvasser often has more than one question to ask
+     * @param responses household's responses
+     * @return success
+     */
     @PostMapping("/response")
     public ResponseEntity<Boolean> addResponses(@RequestBody List<Response> responses) {
         return new ResponseEntity<>(responseService.addResponses(responses), HttpStatus.OK);

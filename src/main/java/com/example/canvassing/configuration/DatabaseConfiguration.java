@@ -6,6 +6,9 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import javax.sql.DataSource;
 
+/**
+ * Connection to the database
+ */
 @Configuration
 public class DatabaseConfiguration {
     @Bean

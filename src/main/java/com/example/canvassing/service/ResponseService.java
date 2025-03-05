@@ -20,10 +20,6 @@ public class ResponseService {
     @Autowired
     private HouseholdRepository householdRepository;
 
-    public boolean addResponse(Response response) {
-        return responseRepository.addResponse(response);
-    }
-
     public boolean addResponses(@NonNull List<Response> responses) {
         return responseRepository.addResponses(responses);
     }

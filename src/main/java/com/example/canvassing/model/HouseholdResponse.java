@@ -6,6 +6,9 @@ import lombok.Setter;
 
 import java.util.List;
 
+/**
+ * a household with their responses to canvass questions
+ */
 @Getter
 @Setter
 @AllArgsConstructor

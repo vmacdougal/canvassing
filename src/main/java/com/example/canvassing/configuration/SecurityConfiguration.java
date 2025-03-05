@@ -15,6 +15,10 @@ import org.springframework.security.web.SecurityFilterChain;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Security. Set up 2 levels of access (CANVASSER and ADMIN) to the endpoints, plus the health check which
+ * doesn't require any
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {

@@ -21,11 +21,4 @@ public class Response {
     private Long answerId;
     private String question;
     private String answer;
-
-    public Response(Long id, Long householdId, Long questionId, Long answerId) {
-        this.id = id;
-        this.householdId = householdId;
-        this.questionId = questionId;
-        this.answerId = answerId;
-    }
 }

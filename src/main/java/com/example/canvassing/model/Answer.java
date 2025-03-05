@@ -6,6 +6,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.*;
 
+/**
+ * a possible answer to a canvass question
+ */
 @Entity
 @Getter
 @Setter
