@@ -84,7 +84,7 @@ public class HouseholdRepository {
         }
     }
 
-    public boolean removeHousehold(int id) {
+    public boolean removeHousehold(long id) {
         Map<String, Object> params = new HashMap<>();
         params.put("id", id);
         int rows = jdbcTemplate.update("DELETE FROM household WHERE id = :id LIMIT 1", params);

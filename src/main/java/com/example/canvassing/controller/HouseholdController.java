@@ -18,6 +18,11 @@ public class HouseholdController {
     @Autowired
     private UpdateController updateController;
 
+    /**
+     * get the 50 uncanvassed households closest to your location
+     * @param location a location
+     * @return 50 closest households
+     */
     @GetMapping("/households")
     public ResponseEntity<List<Household>> getHouseholds(@RequestParam double lat,
                                          @RequestParam double lon) {

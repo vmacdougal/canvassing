@@ -21,7 +21,7 @@ public class HouseholdService {
     Logger logger = LoggerFactory.getLogger(HouseholdService.class);
 
     /**
-     * get the 50 households closest to your location
+     * get the 50 uncanvassed households closest to your location
      * @param location a location
      * @return 50 closest households
      */

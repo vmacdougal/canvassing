@@ -49,6 +49,7 @@ public class ResponseRepository {
         return success;
     }
 
+    @Transactional
     public List<Response> getResponses(long householdId) {
         Map<String, Object> params = Collections.singletonMap("householdId", householdId);
         String sql = """
