@@ -3,31 +3,33 @@ package com.example.canvassing.persistence;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@SpringBootTest
+
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = TestConfig.class)
 public class StatusRepositoryTest {
 
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
-    "postgres:16-alpine"
-  );
+
   @Autowired
   private StatusRepository statusRepo;
 
   @BeforeAll
   static void beforeAll() {
-    postgres.start();
+    TestConfig.postgres.start();
   }
   
   @AfterAll
   static void afterAll() {
-    postgres.stop();
+    TestConfig.postgres.stop();
   }
 
   @Test
   void addStatuses() {
     statusRepo.addStatuses();
   }
+
 }
