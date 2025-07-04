@@ -64,7 +64,7 @@ public class HouseholdRepository {
             throw new RuntimeException("No household found with id " + household.getId());
         }
         params.put("status", household.getStatus().ordinal());
-        int rows = jdbcTemplate.update("UPDATE household SET status = :status WHERE id = :id LIMIT 1", params);
+        int rows = jdbcTemplate.update("UPDATE household SET status = :status WHERE id = :id", params);
         return rows > 0;
     }
 
@@ -87,7 +87,7 @@ public class HouseholdRepository {
     public boolean removeHousehold(long id) {
         Map<String, Object> params = new HashMap<>();
         params.put("id", id);
-        int rows = jdbcTemplate.update("DELETE FROM household WHERE id = :id LIMIT 1", params);
+        int rows = jdbcTemplate.update("DELETE FROM household WHERE id = :id", params);
         return rows > 0;
     }
 }

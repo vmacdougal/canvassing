@@ -3,40 +3,61 @@ package com.example.canvassing.persistence;
 import com.example.canvassing.model.Household;
 import com.example.canvassing.model.Location;
 import com.example.canvassing.model.Status;
+import com.example.canvassing.persistence.StatusRepositoryTest.TestConfig2;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 
 import java.util.List;
+
+import javax.sql.DataSource;
+
+import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.context.annotation.Bean;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = HouseholdRepositoryTest.TestConfig2.class)
 public class HouseholdRepositoryTest {
-   static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
-    "postgres:16-alpine"
-  );
+
   @Autowired
   private HouseholdRepository householdRepository;
+  @Autowired
+  private StatusRepository statusRepository;
 
   @BeforeAll
   static void beforeAll() {
-    postgres.start();
+    TestConfig2.postgres.start();
   }
   
   @AfterAll
   static void afterAll() {
-    postgres.stop();
+    TestConfig2.postgres.stop();
+  }
+
+  @BeforeEach
+  void beforeEach() {
+    statusRepository.addStatuses();
+  }
+
+  @AfterEach
+  void afterEach() {
   }
 
   @Test
-  @Transactional
   void addHousehold() {
     //given a household
     Location location = new Location(30.0, 60.0);
@@ -53,18 +74,17 @@ public class HouseholdRepositoryTest {
   }
 
   @Test
-  @Transactional
   void addAndRemoveHousehold() {
     //given a household
     Location location = new Location(30.0, 60.0);
-    Household household = new Household("123 Elm St", location);
+    Household household = new Household("456 Elm St", location);
 
     //when adding it
     boolean success = householdRepository.addHousehold(household);
     assertTrue(success);
 
     List<Household> uncanvassed = householdRepository.getUncanvassedHouseholds(location);
-    Household retrievedHousehold = findHousehold(uncanvassed, "123 Elm St");
+    Household retrievedHousehold = findHousehold(uncanvassed, "456 Elm St");
     assertNotNull(retrievedHousehold);
     
     //and when removing it
@@ -73,22 +93,21 @@ public class HouseholdRepositoryTest {
 
     //then it should not be there
     uncanvassed = householdRepository.getUncanvassedHouseholds(location);
-    retrievedHousehold = findHousehold(uncanvassed, "123 Elm St");
+    retrievedHousehold = findHousehold(uncanvassed, "456 Elm St");
     assertNull(retrievedHousehold);
   }
 
   @Test
-  @Transactional
   void canvassHousehold() {
         //given a household
     Location location = new Location(30.0, 60.0);
-    Household household = new Household("123 Elm St", location);
+    Household household = new Household("789 Elm St", location);
 
     //when adding it
     boolean success = householdRepository.addHousehold(household);
     assertTrue(success);
     List<Household> uncanvassed = householdRepository.getUncanvassedHouseholds(location);
-    Household retrievedHousehold = findHousehold(uncanvassed, "123 Elm St");
+    Household retrievedHousehold = findHousehold(uncanvassed, "789 Elm St");
 
     //and canvassing it
     retrievedHousehold.setStatus(Status.CANVASSED);
@@ -97,7 +116,7 @@ public class HouseholdRepositoryTest {
     //then it should be successful
     assertTrue(success);
     List<Household> canvassed = householdRepository.getCanvassedHouseholds();
-    retrievedHousehold = findHousehold(canvassed, "123 Elm St");
+    retrievedHousehold = findHousehold(canvassed, "789 Elm St");
     assertNotNull(retrievedHousehold);
   }
 
@@ -108,5 +127,54 @@ public class HouseholdRepositoryTest {
         }
     }
     return null;
+}
+  static class TestConfig2 {
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
+    "postgres:16-alpine"
+  );
+
+  private DataSource dataSource;
+
+  @Bean
+  public DataSource dataSource() {
+    System.out.println("CREATNG A NEW DATASOURCE!!! XXXXXXXXXXXXXX" + dataSource);
+    if (dataSource != null) {
+      return dataSource;
+    }
+    HikariConfig config = new HikariConfig();
+    config.setJdbcUrl(postgres.getJdbcUrl());
+    config.setUsername(postgres.getUsername());
+    config.setDriverClassName("org.postgresql.Driver");
+    config.setPassword(postgres.getPassword());
+    config.setMaxLifetime(5000);
+    dataSource = new HikariDataSource(config);
+    return dataSource;
+  }
+
+  @Bean
+  public NamedParameterJdbcTemplate jdbcTemplate() {
+    NamedParameterJdbcTemplate x = new NamedParameterJdbcTemplate(dataSource());
+    return x;
+  }
+  @Bean
+  public StatusRepository statusRepository() {
+    return new StatusRepository();
+  }
+
+  @Bean
+  public HouseholdRepository householdRepository() {
+    return new HouseholdRepository();
+  }
+
+  @Bean
+  public Flyway flyway() {
+    Flyway flyway = Flyway.configure()
+    .dataSource(dataSource())
+    .mixed(true)
+    .locations("filesystem:src/main/resources")
+    .load();
+    flyway.migrate();
+    return flyway;
+  }
 }
 }
