@@ -1,68 +1,81 @@
 package com.example.canvassing.controller;
 
+import com.example.canvassing.model.CanvassList;
 import com.example.canvassing.model.Household;
 import com.example.canvassing.model.Location;
 import com.example.canvassing.model.Status;
 import com.example.canvassing.service.HouseholdService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
-import org.junit.jupiter.api.AfterAll;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(webEnvironment = RANDOM_PORT)
+import com.example.canvassing.model.Questionnaire;
+
+@WebMvcTest(controllers = HouseholdController.class)
+@ExtendWith(MockitoExtension.class)
 class HouseholdControllerTest {
     private static final ObjectMapper mapper = new ObjectMapper();
-
-    @LocalServerPort
-    private Integer port;
-
+    
+    @MockBean
+    private HouseholdService householdService;
+    @MockBean
+    private UpdateController updateController;
     @Autowired
-    HouseholdService householdService;
+    MockMvc mockMvc;
+
+
+    @InjectMocks
+    private HouseholdController householdController;
 
     @BeforeAll
     static void beforeAll() {
     }
   
-  @AfterAll
-  static void afterAll() {
-  }
-
-
     @BeforeEach
     void setUp() {
-        RestAssured.port = port;
+        RestAssuredMockMvc.standaloneSetup(householdController);
     }
 
     @Test
-    void getCanvassList(){
-        //retrieving a canvass list should be successful
-    given()
-    .auth().basic("susan_admin", "password")
-    .when()
-    .get("/household/canvassList?lat=29.5&lon=-96.5")
-    .then()
-    .statusCode(200)
-    .body("questionnaire", notNullValue())
-    .body("households", notNullValue());
+    @WithMockUser("susan_admin")
+    void getCanvassList() throws Exception {
+    //given a canvass list with one household
+    CanvassList canvassList = createCanvassList();
+    when(householdService.getCanvassList(any())).thenReturn(canvassList);
+    //retrieving a canvass list should be successful
+    ResultActions response = mockMvc.perform(
+    get("/household/canvassList?lat=29.5&lon=-96.5"));
+    response.andExpect(status().isOk())
+    .andExpect(content().string(containsString("123 Elm St")));
 }
 
     @Test
@@ -104,5 +117,11 @@ class HouseholdControllerTest {
         household.setId((long) id);
         household.setStatus(Status.valueOf(status));
         return household;
+    }
+
+    private CanvassList createCanvassList() {
+        Household household = new Household("123 Elm St", new Location(30.0, 60.0));
+        Questionnaire questionnaire = new Questionnaire();
+        return new CanvassList(List.of(household), questionnaire);
     }
 }

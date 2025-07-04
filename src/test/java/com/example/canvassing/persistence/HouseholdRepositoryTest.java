@@ -3,7 +3,6 @@ package com.example.canvassing.persistence;
 import com.example.canvassing.model.Household;
 import com.example.canvassing.model.Location;
 import com.example.canvassing.model.Status;
-import com.example.canvassing.persistence.StatusRepositoryTest.TestConfig2;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -137,7 +136,6 @@ public class HouseholdRepositoryTest {
 
   @Bean
   public DataSource dataSource() {
-    System.out.println("CREATNG A NEW DATASOURCE!!! XXXXXXXXXXXXXX" + dataSource);
     if (dataSource != null) {
       return dataSource;
     }
