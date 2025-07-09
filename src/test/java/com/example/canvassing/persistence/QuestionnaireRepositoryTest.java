@@ -6,7 +6,6 @@ import com.example.canvassing.model.Questionnaire;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,19 +28,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = QuestionnaireRepositoryTest.TestConfig2.class)
+@ContextConfiguration(classes = QuestionnaireRepositoryTest.TestConfig.class)
 public class QuestionnaireRepositoryTest {
   @Autowired
   private QuestionnaireRepository questionRepo;
 
   @BeforeAll
   static void beforeAll() {
-    TestConfig2.postgres.start();
+    TestConfig.postgres.start();
   }
   
   @AfterAll
   static void afterAll() {
-    TestConfig2.postgres.stop();
+    TestConfig.postgres.stop();
   }
 
   @Test
@@ -99,7 +98,7 @@ public class QuestionnaireRepositoryTest {
     return questionnaire;
   }
 
-  static class TestConfig2 {
+  static class TestConfig {
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
     "postgres:16-alpine"
   );

@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = HouseholdRepositoryTest.TestConfig2.class)
+@ContextConfiguration(classes = HouseholdRepositoryTest.TestConfig.class)
 public class HouseholdRepositoryTest {
 
   @Autowired
@@ -39,12 +39,12 @@ public class HouseholdRepositoryTest {
 
   @BeforeAll
   static void beforeAll() {
-    TestConfig2.postgres.start();
+    TestConfig.postgres.start();
   }
   
   @AfterAll
   static void afterAll() {
-    TestConfig2.postgres.stop();
+    TestConfig.postgres.stop();
   }
 
   @BeforeEach
@@ -127,7 +127,7 @@ public class HouseholdRepositoryTest {
     }
     return null;
 }
-  static class TestConfig2 {
+  static class TestConfig {
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
     "postgres:16-alpine"
   );
@@ -151,9 +151,9 @@ public class HouseholdRepositoryTest {
 
   @Bean
   public NamedParameterJdbcTemplate jdbcTemplate() {
-    NamedParameterJdbcTemplate x = new NamedParameterJdbcTemplate(dataSource());
-    return x;
+    return new NamedParameterJdbcTemplate(dataSource());
   }
+
   @Bean
   public StatusRepository statusRepository() {
     return new StatusRepository();

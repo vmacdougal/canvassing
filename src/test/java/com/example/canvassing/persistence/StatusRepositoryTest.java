@@ -19,7 +19,7 @@ import com.zaxxer.hikari.HikariDataSource;
 
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = StatusRepositoryTest.TestConfig2.class)
+@ContextConfiguration(classes = StatusRepositoryTest.TestConfig.class)
 public class StatusRepositoryTest {
 
   @Autowired
@@ -27,19 +27,19 @@ public class StatusRepositoryTest {
 
   @BeforeAll
   static void beforeAll() {
-    TestConfig2.postgres.start();
+    TestConfig.postgres.start();
   }
   
   @AfterAll
   static void afterAll() {
-    TestConfig2.postgres.stop();
+    TestConfig.postgres.stop();
   }
 
   @Test
   void addStatuses() {
     statusRepo.addStatuses();
   }
-  static class TestConfig2 {
+  static class TestConfig {
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
     "postgres:16-alpine"
   );
@@ -48,7 +48,6 @@ public class StatusRepositoryTest {
 
   @Bean
   public DataSource dataSource() {
-    System.out.println("CREATNG A NEW DATASOURCE!!! XXXXXXXXXXXXXX" + dataSource);
     if (dataSource != null) {
       return dataSource;
     }
@@ -64,9 +63,9 @@ public class StatusRepositoryTest {
 
   @Bean
   public NamedParameterJdbcTemplate jdbcTemplate() {
-    NamedParameterJdbcTemplate x = new NamedParameterJdbcTemplate(dataSource());
-    return x;
+    return new NamedParameterJdbcTemplate(dataSource());
   }
+  
   @Bean
   public StatusRepository statusRepository() {
     return new StatusRepository();
