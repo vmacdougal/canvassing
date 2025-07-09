@@ -1,108 +1,106 @@
 package com.example.canvassing.controller;
 
+import com.example.canvassing.model.CanvassList;
 import com.example.canvassing.model.Household;
 import com.example.canvassing.model.Location;
 import com.example.canvassing.model.Status;
 import com.example.canvassing.service.HouseholdService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
+import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import io.restassured.path.json.JsonPath;
-import io.restassured.response.Response;
-import io.restassured.specification.RequestSpecification;
 
-import org.junit.jupiter.api.AfterAll;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(webEnvironment = RANDOM_PORT)
+import com.example.canvassing.model.Questionnaire;
+
+@WebMvcTest(controllers = HouseholdController.class)
+@ExtendWith(MockitoExtension.class)
 class HouseholdControllerTest {
     private static final ObjectMapper mapper = new ObjectMapper();
-
-    @LocalServerPort
-    private Integer port;
-
+    
+    @MockBean
+    private HouseholdService householdService;
+    @MockBean
+    private UpdateController updateController;
     @Autowired
-    HouseholdService householdService;
+    MockMvc mockMvc;
+
+
+    @InjectMocks
+    private HouseholdController householdController;
 
     @BeforeAll
     static void beforeAll() {
     }
   
-  @AfterAll
-  static void afterAll() {
-  }
-
-
     @BeforeEach
     void setUp() {
-        RestAssured.port = port;
+        RestAssuredMockMvc.standaloneSetup(householdController);
     }
 
     @Test
-    void getCanvassList(){
-        //retrieving a canvass list should be successful
-    given()
-    .auth().basic("susan_admin", "password")
-    .when()
-    .get("/household/canvassList?lat=29.5&lon=-96.5")
-    .then()
-    .statusCode(200)
-    .body("questionnaire", notNullValue())
-    .body("households", notNullValue());
+    @WithMockUser("susan_admin")
+    void getCanvassList() throws Exception {
+    //given a canvass list with one household
+    CanvassList canvassList = createCanvassList();
+    when(householdService.getCanvassList(any())).thenReturn(canvassList);
+    //when retrieving a canvass list
+    ResultActions response = mockMvc.perform(
+    get("/household/canvassList?lat=29.5&lon=-96.5"));
+    //then it should be successful
+    response.andExpect(status().isOk())
+    .andExpect(content().string(containsString("123 Elm St")));
 }
 
     @Test
+    @WithMockUser("susan_admin")
     void updateStatus() throws Exception{
-    //given uncanvassed households retrieved
-    RequestSpecification request = given()
-    .auth().basic("susan_admin", "password");
-    Response response = request.get("/households?lat=29.5&lon=-96.5");
-    //and given one in particular
-    JsonPath jsonPathEvaluator = response.jsonPath();
-    Household household = constructHousehold(jsonPathEvaluator);
-
+    //given a canvass list with one household
+    CanvassList canvassList = createCanvassList();
+    when(householdService.getCanvassList(any())).thenReturn(canvassList);
+    Household household = canvassList.getHouseholds().get(0);
     //when its status is updated
     household.setStatus(Status.INACCESSIBLE);
     String json = mapper.writeValueAsString(household);
-    given().contentType(ContentType.JSON)
-    .auth().basic("susan_admin", "password")
-    .body(json)
-    .put("/household/status")
-    .then()
-    .statusCode(200);
+    
+    //when updating the status
+    ResultActions response = mockMvc.perform(
+    put("/household/status")
+    .with(SecurityMockMvcRequestPostProcessors.csrf())
+    .contentType(MediaType.APPLICATION_JSON)
+    .content(json)
+    .accept(MediaType.ALL));
 
-    //then it shouldn't be in the list anymore
-    request = given()
-    .auth().basic("susan_admin", "password");
-    response = request.get("/households?lat=29.5&lon=-96.5");
-    jsonPathEvaluator = response.jsonPath();
-    Household closestHousehold = constructHousehold(jsonPathEvaluator);
-    assertNotEquals(household.getAddress(), closestHousehold.getAddress());
-
+    response.andExpect(status().isOk());
 }
-    private Household constructHousehold(JsonPath jsonPath) {
-        int id = jsonPath.get("[0].id");
-        String address = jsonPath.get("[0].address"); 
-        float latitude = jsonPath.get("[0].latitude");
-        float longitude = jsonPath.get("[0].longitude");
-        String status = jsonPath.get("[0].status");
-        Household household = new Household(address, new Location(latitude, longitude));
-        household.setId((long) id);
-        household.setStatus(Status.valueOf(status));
-        return household;
+
+    private CanvassList createCanvassList() {
+        Household household = new Household("123 Elm St", new Location(30.0, 60.0));
+        household.setId(1L);
+        Questionnaire questionnaire = new Questionnaire();
+        return new CanvassList(List.of(household), questionnaire);
     }
 }

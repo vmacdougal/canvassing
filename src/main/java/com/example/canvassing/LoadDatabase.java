@@ -6,8 +6,11 @@ import com.example.canvassing.model.Questionnaire;
 import com.example.canvassing.persistence.HouseholdRepository;
 import com.example.canvassing.persistence.QuestionnaireRepository;
 import com.example.canvassing.persistence.StatusRepository;
+
+import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,13 +26,17 @@ import java.util.Set;
  */
 @Configuration
 public class LoadDatabase {
+    @Autowired
+    private Flyway flyway;
     private static final Logger log = LoggerFactory.getLogger(LoadDatabase.class);
     private static final List<String> STREET_NAMES = List.of("Elm", "Oak", "Limon", "Spicebrush", "Cliffwood", "Puerta Vista", "Walnut");
     private static final List<String> STREET_TYPES = List.of("Ln", "St", "Blvd", "Way", "Cove");
     private static final String ADDRESS_FORMAT = "%d %s %s";
     private final Random random = new Random();
+
     @Bean
     CommandLineRunner initDatabase(QuestionnaireRepository questionnaireRepository, HouseholdRepository repository, StatusRepository statusRepository) {
+        flyway.migrate();
         //populate the statuses
         statusRepository.addStatuses();
 
