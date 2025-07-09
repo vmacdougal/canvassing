@@ -2,7 +2,7 @@
 This is the back end for a canvassing app.
 
 # Build and run
-It builds and runs on Java 17. You can build it with `mvn clean install`, and run it with `java -jar canvassing-1.0.0.jar`. 
+It builds and runs on Java 17. Start the database with `docker compose up -d`. You can build it with `mvn clean install`, and run it with `java -jar canvassing-1.0.0.jar`. 
 A postman collection with sample data is included so you can exercise the endpoints. The endpoints the canvasser
 has access to are all called with joe_canvasser, but you can also call them with susan_admin and verify that they still work.
 
@@ -43,8 +43,7 @@ There are two levels of user, CANVASSER and ADMIN. Admins can also access all th
 the idea of requiring them to have two sets of credentials for administering the system and working as canvassers seemed strange.
 There are two users in the system, joe_canvasser and susan_admin. The app uses basic authentication in the endpoints for 
 ease of development and demonstration. I am aware that this is not secure at all! Obviously it would be re-worked with session tokens
-or jwts, and also re-enable CSRF protection. Proper identity and access management is a significant effort of its own,
-and there just wasn't time.
+or jwts, and also re-enable CSRF protection (if using session tokens). Proper identity and access management is a significant effort of its own, and there just wasn't time.
 
 I used a web socket to send real-time household changes to logged-in users.
 
@@ -55,7 +54,6 @@ of households, so I assumed it shouldn't work that way.
 # Avenues for further work
 Like all initial releases, this one is more of an MVP than a full-polished product with all possible bells and whistles.
 Further potential developments include:
-* Moving the data to a real database instead of H2 
 * A more intelligent way of searching for households near the user. Right now the query is doing a full table scan to find these households, which won't scale the way it needs to. This would really use more robust location support like a grid system, PostGIS, or Google's S2 library.
 * More care taken with security. I realize the current implementation is insecure, with hard-coded users and passwords in plaintext and csrf disabled. Adding proper user management, encryption, etc, would add significantly to the scope.
 * Storing results of past canvasses. Right now that information is wiped out when the questions change.
