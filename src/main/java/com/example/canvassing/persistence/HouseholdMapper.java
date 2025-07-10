@@ -20,7 +20,8 @@ public class HouseholdMapper implements RowMapper<Household> {
     public Household mapRow(ResultSet rs, int rowNum) throws SQLException {
         Location location = new Location(rs.getDouble("latitude"), rs.getDouble("longitude"));
         Household household = new Household(rs.getString("address"), location);
-        household.setStatus(STATUSES.get(rs.getInt("status")));
+        String status = rs.getString("household_status");
+        household.setStatus(Status.valueOf(status));
         household.setId(rs.getLong("id"));
         return household;
     }

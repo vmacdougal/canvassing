@@ -1,16 +1,17 @@
 CREATE SCHEMA IF NOT EXISTS demo;
 
-CREATE TABLE IF NOT EXISTS status (
-    id INT UNIQUE NOT NULL,
-    status VARCHAR UNIQUE NOT NULL
-);
+CREATE TYPE status AS ENUM ('UNCANVASSED',
+    'NOT_HOME',
+    'CANVASSED',
+    'REFUSED',
+    'INACCESSIBLE');
+
 CREATE TABLE IF NOT EXISTS household (
     id SERIAL PRIMARY KEY,
     address VARCHAR UNIQUE NOT NULL,
     latitude FLOAT NOT NULL,
     longitude FLOAT NOT NULL,
-    status INT NOT NULL,
-    FOREIGN KEY (status) REFERENCES status(id),
+    household_status status NOT NULL,
     check(latitude <= 90.0 AND latitude >= -90.0),
     check(longitude <= 180.0 AND longitude >= -180.0)
 );

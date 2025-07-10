@@ -2,6 +2,7 @@ package com.example.canvassing.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -22,6 +23,7 @@ public class Household {
     Long id;
 
     private String address;
+    @Enumerated
     private Status status;
     private double latitude;
     private double longitude;

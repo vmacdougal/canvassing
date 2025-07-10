@@ -1,8 +1,11 @@
 package com.example.canvassing.persistence;
 
 import com.example.canvassing.model.Answer;
+import com.example.canvassing.model.Household;
+import com.example.canvassing.model.Location;
 import com.example.canvassing.model.Question;
 import com.example.canvassing.model.Questionnaire;
+import com.example.canvassing.model.Response;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -28,10 +31,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = QuestionnaireRepositoryTest.TestConfig.class)
-public class QuestionnaireRepositoryTest {
+@ContextConfiguration(classes = ResponseRepositoryTest.TestConfig.class)
+public class ResponseRepositoryTest {
   @Autowired
-  private QuestionnaireRepository questionRepo;
+  private ResponseRepository responseRepo;
+  @Autowired
+  private HouseholdRepository householdRepo;
+  @Autowired
+  private QuestionnaireRepository questionnaireRepo;
 
   @BeforeAll
   static void beforeAll() {
@@ -44,52 +51,34 @@ public class QuestionnaireRepositoryTest {
   }
 
   @Test
-  void getQuestions() {
-    //given a questionnaire
+  void addAndRetrieveResponse() {
+    //given a household
+    Location location = new Location(30.0, 60.0);
+    Household household = new Household("456 Elm St", location);
+    householdRepo.addHousehold(household);
+    household = householdRepo.getUncanvassedHouseholds(location).get(0);
+    //and given a questionnaire
     Questionnaire questionnaire = createQuestionnaire();
-    questionRepo.createQuestionnaire(questionnaire);
-    //when retrieving the questions
-    questionnaire = questionRepo.getQuestions();
+    questionnaireRepo.createQuestionnaire(questionnaire);
+    questionnaire = questionnaireRepo.getQuestions();
+    Question question = questionnaire.getItems().keySet().iterator().next();
+    Answer answer = questionnaire.getItems().get(question).get(0);
 
-    //then they should look as expected
-    Map<Question, List<Answer>> items = questionnaire.getItems();
-    assertEquals(2, items.size());
-    Set<Question> questions = items.keySet();
-    Question first = questions.iterator().next();
-    assertEquals("Are you registered to vote?", first.getText());
-    List<Answer> answers = items.get(first);
-    assertEquals(2, answers.size());
-    for (Answer answer: answers) {
-        assertEquals(answer.getQuestionId(), first.getId());
-    }
+    //when responses are added and retrieved
+    Response response = new Response();
+    response.setHouseholdId(household.getId());
+    response.setQuestionId(question.getId());
+    response.setAnswerId(answer.getId());
+    responseRepo.addResponse(response);
+    List<Response> responses = responseRepo.getResponses(household.getId());
+
+    //then it should be there
+    assertEquals(1, responses.size());
+    assertEquals(question.getId(), responses.get(0).getQuestionId());
+    assertEquals(answer.getId(), responses.get(0).getAnswerId());
   }
 
-  @Test
-  void updateQuestions() {
-    //given the initial questions
-    Questionnaire questionnaire = questionRepo.getQuestions();
-    //when updating with a new item and retrieving again
-    List<String> answers = List.of("Yes", "No");
-    questionnaire.addItem("May we contact you with reminders?", answers);
-    boolean success = questionRepo.createQuestionnaire(questionnaire);
-    assertTrue(success);
-    questionnaire = questionRepo.getQuestions();
-
-
-    //then they should look as expected
-    Map<Question, List<Answer>> items = questionnaire.getItems();
-    assertEquals(3, items.size());
-    Set<Question> questions = items.keySet();
-    Question first = questions.iterator().next();
-    assertEquals("Are you registered to vote?", first.getText());
-    List<Answer> firstAnswers = items.get(first);
-    assertEquals(2, firstAnswers.size());
-    for (Answer answer: firstAnswers) {
-        assertEquals(answer.getQuestionId(), first.getId());
-    }
-  }
-
-  private Questionnaire createQuestionnaire() {
+private Questionnaire createQuestionnaire() {
     Questionnaire questionnaire = new Questionnaire();
     List<String> answer1 = List.of("Yes", "No");
     questionnaire.addItem("Are you registered to vote?", answer1);
@@ -97,7 +86,6 @@ public class QuestionnaireRepositoryTest {
     questionnaire.addItem("Can I register you today?", answer2);
     return questionnaire;
   }
-
   static class TestConfig {
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
     "postgres:16-alpine"
@@ -119,6 +107,15 @@ public class QuestionnaireRepositoryTest {
     return new NamedParameterJdbcTemplate(dataSource());
   }
 
+  @Bean
+  public ResponseRepository responseRepository() {
+    return new ResponseRepository();
+  }
+
+  @Bean
+  public HouseholdRepository householdRepository() {
+    return new HouseholdRepository();
+  }
   @Bean
   public QuestionnaireRepository questionnaireRepository() {
     return new QuestionnaireRepository();

@@ -1,6 +1,7 @@
 package com.example.canvassing.persistence;
 
 import com.example.canvassing.exception.DuplicateAddressException;
+import com.example.canvassing.exception.HouseholdNotFoundException;
 import com.example.canvassing.model.Household;
 import com.example.canvassing.model.Location;
 import com.example.canvassing.model.Status;
@@ -32,13 +33,13 @@ public class HouseholdRepository {
         double minLon = location.getLongitude() - .1;
         double maxLon = location.getLongitude() + .1;
         Map<String, Object>  params = new HashMap<>();
-        params.put("status", Status.UNCANVASSED.ordinal());
+        params.put("status", Status.UNCANVASSED.name());
         params.put("minLat", minLat);
         params.put("maxLat", maxLat);
         params.put("minLon", minLon);
         params.put("maxLon", maxLon);
         String sql = """
-                SELECT * FROM household WHERE status = :status
+                SELECT * FROM household WHERE household_status = (CAST(:status AS status))
                 AND latitude >= :minLat AND latitude <= :maxLat
                 AND longitude >= :minLon AND longitude <= :maxLon
                 """;
@@ -47,8 +48,8 @@ public class HouseholdRepository {
 
     public List<Household> getCanvassedHouseholds() {
         Map<String, Object>  params = new HashMap<>();
-        params.put("status", Status.UNCANVASSED.ordinal());
-        return jdbcTemplate.query("SELECT * FROM household WHERE status != :status", params, new HouseholdMapper());
+        params.put("status", Status.UNCANVASSED.name());
+        return jdbcTemplate.query("SELECT * FROM household WHERE household_status != (CAST(:status AS status))", params, new HouseholdMapper());
     }
 
     public Household getHousehold(long id) {
@@ -61,10 +62,10 @@ public class HouseholdRepository {
         params.put("id", household.getId());
         List<Household> households = jdbcTemplate.query("SELECT * FROM household WHERE id = :id", params, new HouseholdMapper());
         if (households.isEmpty()) {
-            throw new RuntimeException("No household found with id " + household.getId());
+            throw new HouseholdNotFoundException("No household found with id " + household.getId());
         }
-        params.put("status", household.getStatus().ordinal());
-        int rows = jdbcTemplate.update("UPDATE household SET status = :status WHERE id = :id", params);
+        params.put("status", household.getStatus().name());
+        int rows = jdbcTemplate.update("UPDATE household SET household_status = (CAST(:status AS status)) WHERE id = :id", params);
         return rows > 0;
     }
 
@@ -73,9 +74,9 @@ public class HouseholdRepository {
         params.put("address", household.getAddress());
         params.put("latitude", household.getLatitude());
         params.put("longitude", household.getLongitude());
-        params.put("status",  Status.UNCANVASSED.ordinal());
+        params.put("status",  Status.UNCANVASSED.name());
         try {
-            int rows = jdbcTemplate.update("INSERT INTO household (address, latitude, longitude, status) VALUES (:address, :latitude, :longitude, :status)",
+            int rows = jdbcTemplate.update("INSERT INTO household (address, latitude, longitude, household_status) VALUES (:address, :latitude, :longitude,  (CAST(:status AS status)))",
                     params);
             return rows > 0;
         }
