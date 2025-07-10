@@ -5,7 +5,6 @@ import com.example.canvassing.model.Location;
 import com.example.canvassing.model.Questionnaire;
 import com.example.canvassing.persistence.HouseholdRepository;
 import com.example.canvassing.persistence.QuestionnaireRepository;
-import com.example.canvassing.persistence.StatusRepository;
 
 import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
@@ -35,10 +34,8 @@ public class LoadDatabase {
     private final Random random = new Random();
 
     @Bean
-    CommandLineRunner initDatabase(QuestionnaireRepository questionnaireRepository, HouseholdRepository repository, StatusRepository statusRepository) {
+    CommandLineRunner initDatabase(QuestionnaireRepository questionnaireRepository, HouseholdRepository repository) {
         flyway.migrate();
-        //populate the statuses
-        statusRepository.addStatuses();
 
         //populate the questionnaire
         Questionnaire questionnaire = new Questionnaire();

@@ -42,7 +42,14 @@ public class HouseholdController {
         if (household.getId() == null ||  household.getStatus() == null) {
             throw new RuntimeException("This household does not have enough information to update");
         }
-        return new ResponseEntity<>(householdService.setStatus(household), HttpStatus.OK);
+        boolean success = false;
+        try {
+            success = householdService.setStatus(household);
+            return new ResponseEntity<>(success, HttpStatus.OK);
+        }
+        catch (Exception exception) {
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping("/household")

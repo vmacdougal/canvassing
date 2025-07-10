@@ -118,10 +118,6 @@ public class QuestionnaireRepositoryTest {
   public NamedParameterJdbcTemplate jdbcTemplate() {
     return new NamedParameterJdbcTemplate(dataSource());
   }
-  @Bean
-  public StatusRepository statusRepository() {
-    return new StatusRepository();
-  }
 
   @Bean
   public QuestionnaireRepository questionnaireRepository() {
@@ -139,8 +135,6 @@ public class QuestionnaireRepositoryTest {
     return flyway;
   }
 }
-
-
 
 
 }

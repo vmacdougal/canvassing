@@ -34,8 +34,6 @@ public class HouseholdRepositoryTest {
 
   @Autowired
   private HouseholdRepository householdRepository;
-  @Autowired
-  private StatusRepository statusRepository;
 
   @BeforeAll
   static void beforeAll() {
@@ -49,7 +47,6 @@ public class HouseholdRepositoryTest {
 
   @BeforeEach
   void beforeEach() {
-    statusRepository.addStatuses();
   }
 
   @AfterEach
@@ -152,11 +149,6 @@ public class HouseholdRepositoryTest {
   @Bean
   public NamedParameterJdbcTemplate jdbcTemplate() {
     return new NamedParameterJdbcTemplate(dataSource());
-  }
-
-  @Bean
-  public StatusRepository statusRepository() {
-    return new StatusRepository();
   }
 
   @Bean
