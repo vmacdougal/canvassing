@@ -3,12 +3,12 @@ package com.example.canvassing.controller;
 import com.example.canvassing.model.CanvassList;
 import com.example.canvassing.model.Household;
 import com.example.canvassing.model.Location;
+import com.example.canvassing.model.Questionnaire;
 import com.example.canvassing.model.Status;
 import com.example.canvassing.service.HouseholdService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
-import io.restassured.path.json.JsonPath;
 
 import java.util.List;
 
@@ -34,7 +34,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.example.canvassing.model.Questionnaire;
 
 @WebMvcTest(controllers = HouseholdController.class)
 @ExtendWith(MockitoExtension.class)

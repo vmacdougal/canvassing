@@ -2,13 +2,18 @@
 This is the back end for a canvassing app.
 
 # Build and run
-It builds and runs on Java 17. Start the database with `docker compose up -d`. You can build it with `mvn clean install`, and run it with `java -jar canvassing-1.0.0.jar`. 
+It builds and runs on Java 17. Start the database with `docker compose up -d`. You can build it with `mvn clean install`, and run it with `cd target && java -jar canvassing-1.0.0.jar`. 
 A postman collection with sample data is included so you can exercise the endpoints. The endpoints the canvasser
 has access to are all called with joe_canvasser, but you can also call them with susan_admin and verify that they still work.
 
 # Overview
-Upon start-up, it populates a database with 500 random fake households in the Austin area and a 
+Upon start-up, it populates a database with 10,000 random households in the Austin area and a 
 questionnaire with two questions for the canvassers to ask. It provides API endpoints for canvassers and organizational adminstrators.
+
+## Data Source
+The household data comes from Austin's Open Data portal at https://data.austintexas.gov/dataset/Addresses/9s7j-tygf/about_data.
+
+# Capabilities
 
 Administrators can:
 1. Add a household

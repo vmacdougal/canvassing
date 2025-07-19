@@ -81,7 +81,8 @@ public class HouseholdRepository {
             return rows > 0;
         }
         catch (RuntimeException e) {
-            throw new DuplicateAddressException("This household already exists", e);
+            //throw new DuplicateAddressException("This household already exists", e);
+            return false;
         }
     }
 
