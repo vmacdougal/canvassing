@@ -6,6 +6,9 @@ import com.example.canvassing.model.Questionnaire;
 import com.example.canvassing.persistence.HouseholdRepository;
 import com.example.canvassing.persistence.QuestionnaireRepository;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,9 +17,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
 /**
@@ -28,10 +32,7 @@ public class LoadDatabase {
     @Autowired
     private Flyway flyway;
     private static final Logger log = LoggerFactory.getLogger(LoadDatabase.class);
-    private static final List<String> STREET_NAMES = List.of("Elm", "Oak", "Limon", "Spicebrush", "Cliffwood", "Puerta Vista", "Walnut");
-    private static final List<String> STREET_TYPES = List.of("Ln", "St", "Blvd", "Way", "Cove");
-    private static final String ADDRESS_FORMAT = "%d %s %s";
-    private final Random random = new Random();
+    private static final Charset UTF8 = Charset.availableCharsets().get("UTF-8");
 
     @Bean
     CommandLineRunner initDatabase(QuestionnaireRepository questionnaireRepository, HouseholdRepository repository) {
@@ -46,26 +47,38 @@ public class LoadDatabase {
         questionnaireRepository.createQuestionnaire(questionnaire);
 
         //insert some addresses
-        Set<String> addresses = new HashSet<>();
+
+        Set<Household> households = readHouseholds("Addresses.csv");
 
         return args -> {
-            for (int i = 0; i < 500; i++) {
-                Location location = new Location(29.0 + random.nextDouble(), -97 + random.nextDouble());
-                String address = pickUniqueAddress(addresses);
-                Household household = new Household(address, location);
+            for (Household household: households) {
                 log.info("Preloading household {}", household);
                 repository.addHousehold(household);
             }
         };
     }
-    private String pickUniqueAddress(Set<String> addresses) {
-        String address = ADDRESS_FORMAT.formatted(random.nextInt(10000), STREET_NAMES.get(random.nextInt(STREET_NAMES.size())), STREET_TYPES.get(random.nextInt(STREET_TYPES.size())));
-        while (addresses.contains(address)) {
-            address = ADDRESS_FORMAT.formatted(random.nextInt(10000), STREET_NAMES.get(random.nextInt(STREET_NAMES.size())), STREET_TYPES.get(random.nextInt(STREET_TYPES.size())));
+
+    Set<Household> readHouseholds(String filename) {
+        Set<Household> households = new HashSet<>();
+        CSVParser parser = null;
+        String currentPath = null;
+        try {
+            InputStream is = getClass().getClassLoader().getResourceAsStream(filename);
+            String[] headers = {"LON", "LAT", "FULL_STREET_NAME"};
+            CSVFormat csvFormat = CSVFormat.DEFAULT.builder()
+                .setHeader(headers)
+                .setSkipHeaderRecord(true)
+                .build();
+            parser = CSVParser.parse(is, UTF8, csvFormat);
         }
-        addresses.add(address);
-        return address;
+        catch (Exception exception) {
+            throw new RuntimeException(currentPath + "   Could not read in the addresses", exception);
+        }
+        for (CSVRecord csvRecord : parser) {
+            Location location = new Location(Float.parseFloat(csvRecord.get("LAT")), Float.parseFloat(csvRecord.get("LON")));
+            Household household = new Household(csvRecord.get("FULL_STREET_NAME"), location);
+            households.add(household);
+        }
+        return households;
     }
-
-
 }
