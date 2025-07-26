@@ -1,15 +1,19 @@
 package com.example.canvassing.persistence;
 
+import com.example.canvassing.exception.BadLocationException;
 import com.example.canvassing.exception.DuplicateAddressException;
 import com.example.canvassing.exception.HouseholdNotFoundException;
 import com.example.canvassing.model.Household;
 import com.example.canvassing.model.Location;
 import com.example.canvassing.model.Status;
 import lombok.NonNull;
+import net.postgis.jdbc.PGgeometry;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
-
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +23,7 @@ import java.util.Map;
 public class HouseholdRepository {
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
+    private static final String POINT_FORMAT = "SRID=4326;POINT(%s %s)";
 
     /**
      * returns all uncanvassed households within .1 degree latitude and longitude
@@ -28,20 +33,15 @@ public class HouseholdRepository {
      * @return a list of households near them
      */
     public List<Household> getUncanvassedHouseholds(Location location) {
-        double minLat = location.getLatitude() - .1;
-        double maxLat = location.getLatitude() + .1;
-        double minLon = location.getLongitude() - .1;
-        double maxLon = location.getLongitude() + .1;
+        PGgeometry origin = getGeometry(location.getLatitude(), location.getLongitude());
         Map<String, Object>  params = new HashMap<>();
         params.put("status", Status.UNCANVASSED.name());
-        params.put("minLat", minLat);
-        params.put("maxLat", maxLat);
-        params.put("minLon", minLon);
-        params.put("maxLon", maxLon);
+        params.put("location", origin);
         String sql = """
-                SELECT * FROM household WHERE household_status = (CAST(:status AS status))
-                AND latitude >= :minLat AND latitude <= :maxLat
-                AND longitude >= :minLon AND longitude <= :maxLon
+                SELECT *, household.location_geo <-> :location AS distance
+                FROM household WHERE household_status = (CAST(:status AS status))
+                ORDER BY distance
+                LIMIT 100
                 """;
         return jdbcTemplate.query(sql, params, new HouseholdMapper());
     }
@@ -71,18 +71,23 @@ public class HouseholdRepository {
 
     public boolean addHousehold(@NonNull Household household) {
         Map<String, Object> params = new HashMap<>();
+        PGgeometry location = getGeometry(household.getLatitude(), household.getLongitude());
         params.put("address", household.getAddress());
         params.put("latitude", household.getLatitude());
         params.put("longitude", household.getLongitude());
         params.put("status",  Status.UNCANVASSED.name());
+        params.put("location", location);
         try {
-            int rows = jdbcTemplate.update("INSERT INTO household (address, latitude, longitude, household_status) VALUES (:address, :latitude, :longitude,  (CAST(:status AS status)))",
+            int rows = jdbcTemplate.update("INSERT INTO household (address, latitude, longitude, household_status, location_geo) VALUES (:address, :latitude, :longitude,  (CAST(:status AS status)), :location)",
                     params);
             return rows > 0;
         }
-        catch (RuntimeException e) {
+        catch (DuplicateKeyException e) {
             //throw new DuplicateAddressException("This household already exists", e);
             return false;
+        }
+        catch (RuntimeException e) {
+            throw new BadLocationException("household " + household + " does not have a valid latitude/longitude", e);
         }
     }
 
@@ -91,5 +96,18 @@ public class HouseholdRepository {
         params.put("id", id);
         int rows = jdbcTemplate.update("DELETE FROM household WHERE id = :id", params);
         return rows > 0;
+    }
+
+    private PGgeometry getGeometry(double latitude, double longitude) {
+        PGgeometry location = null;
+        try {
+            String latString = Double.toString(latitude);
+            String lonString = Double.toString(longitude);
+            location = new PGgeometry(String.format(POINT_FORMAT, lonString, latString));
+        }
+        catch (SQLException sqlException) {
+            throw new BadLocationException("household " + latitude + " " + longitude + " does not have a valid latitude/longitude", sqlException);
+        }
+        return location;
     }
 }
