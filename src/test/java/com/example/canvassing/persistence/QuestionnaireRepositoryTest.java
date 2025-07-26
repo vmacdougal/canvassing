@@ -23,6 +23,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.utility.DockerImageName;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -98,9 +99,12 @@ public class QuestionnaireRepositoryTest {
     return questionnaire;
   }
 
+
   static class TestConfig {
+
+    static DockerImageName myImage = DockerImageName.parse("postgis/postgis").asCompatibleSubstituteFor("postgres");
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
-    "postgres:16-alpine"
+    myImage
   );
 
   @Bean

@@ -1,10 +1,16 @@
 package com.example.canvassing.persistence;
 
+import com.example.canvassing.exception.BadLocationException;
 import com.example.canvassing.model.Household;
 import com.example.canvassing.model.Location;
 import com.example.canvassing.model.Status;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
@@ -23,10 +29,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.PostgreSQLContainer;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.testcontainers.utility.DockerImageName;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = HouseholdRepositoryTest.TestConfig.class)
@@ -72,7 +75,7 @@ public class HouseholdRepositoryTest {
   @Test
   void addAndRemoveHousehold() {
     //given a household
-    Location location = new Location(30.0, 60.0);
+    Location location = new Location(31.0, 61.0);
     Household household = new Household("456 Elm St", location);
 
     //when adding it
@@ -96,7 +99,7 @@ public class HouseholdRepositoryTest {
   @Test
   void canvassHousehold() {
         //given a household
-    Location location = new Location(30.0, 60.0);
+    Location location = new Location(32.0, 62.0);
     Household household = new Household("789 Elm St", location);
 
     //when adding it
@@ -116,6 +119,17 @@ public class HouseholdRepositoryTest {
     assertNotNull(retrievedHousehold);
   }
 
+  @Test
+  void invalidLocation() {
+    //given a household with an invalid lat/lon
+    Location location = new Location(932.0, 962.0);
+    Household household = new Household("1 Evergreen Terrace", location);
+
+    //when adding it, it should throw an exception
+    assertThrows(BadLocationException.class, () -> {householdRepository.addHousehold(household);
+    });
+  }
+
   private Household findHousehold(List<Household> households, String address) {
     for (Household retrieved: households) {
         if (retrieved.getAddress().equals(address)) {
@@ -125,8 +139,9 @@ public class HouseholdRepositoryTest {
     return null;
 }
   static class TestConfig {
+    static DockerImageName myImage = DockerImageName.parse("postgis/postgis").asCompatibleSubstituteFor("postgres");
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
-    "postgres:16-alpine"
+    myImage
   );
 
   private DataSource dataSource;

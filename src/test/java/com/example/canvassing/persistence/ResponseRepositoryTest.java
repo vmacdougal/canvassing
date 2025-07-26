@@ -10,8 +10,6 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import javax.sql.DataSource;
 
@@ -26,9 +24,9 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.utility.DockerImageName;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = ResponseRepositoryTest.TestConfig.class)
@@ -87,8 +85,9 @@ private Questionnaire createQuestionnaire() {
     return questionnaire;
   }
   static class TestConfig {
+    static DockerImageName myImage = DockerImageName.parse("postgis/postgis").asCompatibleSubstituteFor("postgres");
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
-    "postgres:16-alpine"
+    myImage
   );
 
   @Bean
