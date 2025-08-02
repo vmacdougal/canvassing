@@ -1,29 +1,20 @@
 package com.example.canvassing.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import lombok.*;
 
 /**
  * a household.
  */
-@Entity
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class Household {
-    private @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     private String address;
-    @Enumerated
     private Status status;
     private double latitude;
     private double longitude;
