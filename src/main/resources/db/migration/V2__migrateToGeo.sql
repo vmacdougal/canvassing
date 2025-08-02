@@ -2,6 +2,8 @@ CREATE EXTENSION IF NOT EXISTS postgis;
 
 SELECT postgis_extensions_upgrade();
 
+-- geometry types are more efficient than geography types and have better support.
+-- canvasses are never over a large enough area for the curvature of the earth to matter.
 ALTER TABLE household
 ADD location_geo geometry(POINT,4326);
 

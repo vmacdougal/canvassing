@@ -1,15 +1,10 @@
 package com.example.canvassing.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import lombok.*;
 
 /**
  * a possible answer to a canvass question
  */
-@Entity
 @Getter
 @Setter
 @ToString
@@ -17,8 +12,6 @@ import lombok.*;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class Answer {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private Long  questionId;

@@ -7,7 +7,7 @@ A postman collection with sample data is included so you can exercise the endpoi
 has access to are all called with joe_canvasser, but you can also call them with susan_admin and verify that they still work.
 
 # Overview
-Upon start-up, it populates a database with 10,000 random households in the Austin area and a 
+Upon start-up, it populates a database with 10,000 households in the Austin area and a 
 questionnaire with two questions for the canvassers to ask. It provides API endpoints for canvassers and organizational adminstrators.
 
 ## Data Source
@@ -59,7 +59,6 @@ of households, so I assumed it shouldn't work that way.
 # Avenues for further work
 Like all initial releases, this one is more of an MVP than a full-polished product with all possible bells and whistles.
 Further potential developments include:
-* A more intelligent way of searching for households near the user. Right now the query is doing a full table scan to find these households, which won't scale the way it needs to. This would really use more robust location support like a grid system, PostGIS, or Google's S2 library.
 * More care taken with security. I realize the current implementation is insecure, with hard-coded users and passwords in plaintext and csrf disabled. Adding proper user management, encryption, etc, would add significantly to the scope.
 * Storing results of past canvasses. Right now that information is wiped out when the questions change.
 * Consider solutions to data-related bottlenecks. These might include:
