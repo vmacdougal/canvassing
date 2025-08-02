@@ -8,12 +8,13 @@ import net.postgis.jdbc.PGgeometry;
 import net.postgis.jdbc.geometry.Point;
 
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.lang.NonNull;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class HouseholdMapper implements RowMapper<Household> {
-    public Household mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public Household mapRow(@NonNull ResultSet rs, int rowNum) throws SQLException {
         PGgeometry geometry = (PGgeometry) rs.getObject("location_geo");
         Point point = geometry.getGeometry().getFirstPoint();
         Location location = new Location(point.y, point.x);

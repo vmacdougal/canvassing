@@ -26,9 +26,7 @@ public class HouseholdRepository {
     private static final String POINT_FORMAT = "SRID=4326;POINT(%s %s)";
 
     /**
-     * returns all uncanvassed households within .1 degree latitude and longitude
-     * of the location. Outside the polar regions, this is a rectangle about
-     * 7 miles by 4-7 miles
+     * returns the hundred households closest to the canvasser
      * @param location canvasser's location
      * @return a list of households near them
      */
@@ -73,12 +71,10 @@ public class HouseholdRepository {
         Map<String, Object> params = new HashMap<>();
         PGgeometry location = getGeometry(household.getLatitude(), household.getLongitude());
         params.put("address", household.getAddress());
-        params.put("latitude", household.getLatitude());
-        params.put("longitude", household.getLongitude());
         params.put("status",  Status.UNCANVASSED.name());
         params.put("location", location);
         try {
-            int rows = jdbcTemplate.update("INSERT INTO household (address, latitude, longitude, household_status, location_geo) VALUES (:address, :latitude, :longitude,  (CAST(:status AS status)), :location)",
+            int rows = jdbcTemplate.update("INSERT INTO household (address, household_status, location_geo) VALUES (:address, (CAST(:status AS status)), :location)",
                     params);
             return rows > 0;
         }
